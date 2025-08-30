@@ -69,7 +69,7 @@ class KNS_KSamplerConfigSelector:
  
     CATEGORY = "Karlmeister Nodes"
  
-    def generate(self, steps, cfg, sampler_name, scheduler, impact_scheduler, denoise):
+    def generate(self, steps, cfg, sampler_name, scheduler, impact_scheduler, easy_use_scheduler, denoise):
         ksamplerconfig = (steps, cfg, sampler_name, scheduler, impact_scheduler, easy_use_scheduler, denoise)
         return (steps, cfg, sampler_name, scheduler, impact_scheduler, easy_use_scheduler, denoise, ksamplerconfig,)
         
@@ -177,13 +177,41 @@ class KNS_TextConcatenator:
         merged_text = delimiter.join(text_inputs)
         
         return (merged_text,)
-
+        
 # wildcard trick is taken from pythongossss's
 class AnyType(str):
     def __ne__(self, __value: object) -> bool:
         return False
 
-any_typ = AnyType("*")
+any_type = AnyType("*")
+
+# Splits the input string
+class KNS_SplitString:
+
+    @classmethod
+    def INPUT_TYPES(s):  
+    
+        return {"required": {
+                "text": ("STRING", {"multiline": False, "default": "text"}),
+            },
+            "optional": {
+                "delimiter": ("STRING", {"multiline": False, "default": ","}),
+            }            
+        }
+
+    RETURN_TYPES = (any_type, any_type, any_type, any_type, )
+    RETURN_NAMES = ("string_1", "string_2", "string_3", "string_4", )    
+    FUNCTION = "split"
+    CATEGORY = "Karlmeister Nodes"
+
+    def split(self, text, delimiter=""):
+
+        # Split the text string
+        parts = text.split(delimiter)
+        strings = [part.strip() for part in parts[:4]]
+        string_1, string_2, string_3, string_4 = strings + [""] * (4 - len(strings))            
+
+        return (string_1, string_2, string_3, string_4, )
 
 # Returns the first if it isn't None. Otherwise, returns the second one.
 class KNS_A_IfNotNone:
@@ -195,12 +223,12 @@ class KNS_A_IfNotNone:
         return {
             "required": {},
             "optional": {
-                "input_a": (any_typ,),
-                "input_b": (any_typ,),
+                "input_a": (any_type,),
+                "input_b": (any_type,),
             }
         }
 
-    RETURN_TYPES = (any_typ, "BOOLEAN",)
+    RETURN_TYPES = (any_type, "BOOLEAN",)
     RETURN_NAMES = ("output", "is_input_a_none",)
     FUNCTION = "checkNone"
 
@@ -224,7 +252,8 @@ NODE_CLASS_MAPPINGS = {
     "KSamplerConfigSelector_Tuple": KNS_KSamplerConfigSelector_Tuple,
     "KSamplerConfigUnpack": KNS_KSamplerConfigUnpack,
     "TextConcatenator": KNS_TextConcatenator,
-    "A_IfNotNone": KNS_A_IfNotNone
+    "A_IfNotNone": KNS_A_IfNotNone,
+    "SplitString": KNS_SplitString
 }
  
 # A dictionary that contains the friendly/humanly readable titles for the nodes
@@ -234,5 +263,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "KSamplerConfigSelector_Tuple": "KSampler Config Selector With Tuple Output",
     "KSamplerConfigUnpack": "KSampler Config Tuple",
     "TextConcatenator": "Text Concatenator",
-    "A_IfNotNone": "A If Not None."
+    "A_IfNotNone": "A If Not None.",
+    "SplitString": "Split a string."
 }
