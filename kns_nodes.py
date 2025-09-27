@@ -1,10 +1,9 @@
 from datetime import datetime, timezone
 import comfy
-import impact.core as core
-
 # Monkey patch schedulers
 SCHEDULERS = comfy.samplers.KSampler.SCHEDULERS + ["AYS SD1", "AYS SDXL", "AYS SVD", "GITS"]
 EASYUSE_SCHEDULERS = comfy.samplers.KSampler.SCHEDULERS + ['align_your_steps', 'gits']
+IMPACT_SCHEDULERS = comfy.samplers.KSampler.SCHEDULERS + ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]', 'LTXV[default]', 'OSS FLUX', 'OSS Wan', 'OSS Chroma']
 
 class KNS_SeedFilenameGenerator:
     def __init__(self):
@@ -54,13 +53,13 @@ class KNS_KSamplerConfigSelector:
                 "cfg": ("FLOAT", {"default": 7.0, "min": 0.0, "max": 100.0}),
                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
                 "scheduler": (SCHEDULERS,),
-                "impact_scheduler": (core.SCHEDULERS,),
+                "impact_scheduler": (IMPACT_SCHEDULERS,),
                 "easy_use_scheduler": (EASYUSE_SCHEDULERS,),
                 "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01})
             }
         }
  
-    RETURN_TYPES = ("INT", "FLOAT", comfy.samplers.KSampler.SAMPLERS, SCHEDULERS, core.SCHEDULERS, EASYUSE_SCHEDULERS, "FLOAT", "KSamplerConfigTuple",)
+    RETURN_TYPES = ("INT", "FLOAT", comfy.samplers.KSampler.SAMPLERS, SCHEDULERS, IMPACT_SCHEDULERS, EASYUSE_SCHEDULERS, "FLOAT", "KSamplerConfigTuple",)
     RETURN_NAMES = ("steps", "cfg", "sampler_name", "scheduler", "impact_scheduler", "easy_use_scheduler", "denoise", "ksamplerconfig",)
  
     FUNCTION = "generate"
@@ -88,7 +87,7 @@ class KNS_KSamplerConfigSelector_Tuple:
                 "cfg": ("FLOAT", {"default": 7.0, "min": 0.0, "max": 100.0}),
                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
                 "scheduler": (SCHEDULERS,),
-                "impact_scheduler": (core.SCHEDULERS,),
+                "impact_scheduler": (IMPACT_SCHEDULERS,),
                 "easy_use_scheduler": (EASYUSE_SCHEDULERS,),
                 "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01})
             }
@@ -114,7 +113,7 @@ class KNS_KSamplerConfigUnpack:
     def INPUT_TYPES(cls):
         return {"required": {"ksamplerconfig": ("KSamplerConfigTuple",)},}
         
-    RETURN_TYPES = ("INT", "FLOAT", comfy.samplers.KSampler.SAMPLERS, SCHEDULERS, core.SCHEDULERS, EASYUSE_SCHEDULERS, "FLOAT",)
+    RETURN_TYPES = ("INT", "FLOAT", comfy.samplers.KSampler.SAMPLERS, SCHEDULERS, IMPACT_SCHEDULERS, EASYUSE_SCHEDULERS, "FLOAT",)
     RETURN_NAMES = ("steps", "cfg", "sampler_name", "scheduler", "impact_scheduler", "easy_use_scheduler", "denoise",)
     FUNCTION = "unpack_KSamplerConfigTuple"
     CATEGORY = "Karlmeister Nodes"
