@@ -1,6 +1,7 @@
 __pycache__
 *.ini
 *.bkp
+*.Identifier
 wildcards/**
 .vscode/
 .idea/
